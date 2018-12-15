@@ -1,2 +1,32 @@
-const pgp = require('pg-promise')();
-var db = pgp('postgres://mqvvplpgwkwaww:bbe283a5d4ce86d696c0794bfca51f66630f8553225b83bff3880b169880250a@ec2-54-243-147-162.compute-1.amazonaws.com:5432/ddhq6akm6qbbtp?ssl=true');
+var express = require('express');
+var app = express();
+var db = require('./database');
+
+var cors = require('cors');
+app.use(cors())
+
+var bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+	extended: true
+}));
+
+app.get('/', function (req, res) {
+	res.send('Express is running');
+});
+
+var output = {
+    status: 'success',
+	message: 'REST API is working'
+}
+app.get('/api/json', function (req, res) {
+    res.status(500).json(output);
+});
+
+app.get('/api/order/', db.getAllOrders);
+
+
+var port = process.env.PORT || 5432;
+app.listen(port, function () {
+	console.log('App is running on http://localhost:' + port);
+});
